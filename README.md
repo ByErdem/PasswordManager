@@ -11,4 +11,4 @@
 <li>RabbitMQ</li>
 </ul>
 
-<img src="https://jwt.io/img/pic_logo.svg" style="width:150px;"/>
+<img src="https://drive.google.com/file/d/1K58qOffjeeuJf3B1f-XAhTXI4JXmKhF6/view?usp=sharing" style="width:150px;"/>
