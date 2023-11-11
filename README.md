@@ -11,4 +11,4 @@
 <li>RabbitMQ</li>
 </ul>
 
-<img src="https://drive.google.com/file/d/1K58qOffjeeuJf3B1f-XAhTXI4JXmKhF6/view?usp=sharing" style="width:150px;"/>
+<img src="https://lh3.googleusercontent.com/u/0/drive-viewer/AK7aPaCBrEsSwx_9FW2CaLQDUWdwcgQMXZE1-Bb_WtcdB26q9e4-ezI8_FGsCxh_U2L6sePc2cs0GQj5YO1viV-Pt9_1YPQ8VQ=w1920-h919" style="width:150px;"/>
