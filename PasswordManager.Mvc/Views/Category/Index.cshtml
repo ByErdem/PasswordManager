@@ -1,0 +1,166 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_DashboardPublicFieldsLayout.cshtml";
+}
+
+@model ResponseDto<List<CategoryDto>>
+
+<div class="row row-sm ">
+    <div class="col-md-12 col-xl-12">
+        <div class="card overflow-hidden review-project">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mg-b-10">Categories</h4>
+                    <i class="mdi mdi-dots-horizontal text-gray"></i>
+                </div>
+
+                @*<button type="button" class="btn btn-success btnNewCategory" data-bs-target="#frmNewCategory" data-bs-toggle="modal" data-bs-effect="effect-flip-horizontal">New Category</button>*@
+
+                <div class="d-flex justify-content-between align-items-center">
+                        <div class="ml-auto">
+                            <button type="button" class="btn btn-success btnNewCategory">New Category</button>
+                        </div>
+                        <div class="mr-auto">
+                            <input type="text" class="form-control txtCategorySearch" placeholder="Ara...">
+                        </div>
+                </div>
+
+                <p class="tx-12 text-muted mb-3"></p>
+                <div class="table-responsive mb-0">
+
+                    <table id="tblCategory" class="table table-hover table-bordered mb-0 text-md-nowrap text-lg-nowrap text-xl-nowrap table-striped ">
+                        <thead>
+                            <tr>
+                                <th>Queue</th>
+                                <th>Category Name</th>
+                                <th>Parent Category</th>
+                                <th>Created Date</th>
+                                <th>Process</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Data.Count > 0)
+                            {
+                                int index = 0;
+                                foreach (var item in Model.Data)
+                                {
+                                    <tr>
+                                        <td>@(index+1)</td>
+                                        <td>@item.CATEGORYNAME</td>
+                                        <td>@(item.PARENTCATEGORYNAME ?? "")</td>
+                                        <td>@item.CREATEDDATE</td>
+                                        <td>
+                                            <button categoryid="@item.CATEGORYID" data="@Newtonsoft.Json.JsonConvert.SerializeObject(item)" type="submit" class="btn btn-danger btnUpdate" style="color:white;"><i class="fa fa-edit"></i></button>
+                                            <button categoryid="@item.CATEGORYID" type="submit" class="btn btn-danger btnDelete" style="color:white;"><i class="far fa-trash-alt"></i></button>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td id="NoData" colspan="4" style="text-align:center; vertical-align:middle;">Kayıt Yok</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal effect-flip-horizontal" id="frmNewCategory">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-content-demo">
+            <div class="modal-header">
+                <h6 class="modal-title">New Category</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="frmNewCategoryFormData">
+                    <div class="form-group">
+                        <label>Category Name</label> <input class="form-control txtCategoryName" name="txtCategoryName" placeholder="Enter category name" type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Parent Category</label>
+                        <select class="form-control select2 cmbNewCategory" name="cmbNewCategory" style="width:100%;">
+                            <option value="-1">
+                                Seçiniz
+                            </option>
+                            @if (Model.Data.Count > 0)
+                            {
+                                foreach (var item in Model.Data)
+                                {
+                                    <option value="@item.CATEGORYID">
+                                        @item.CATEGORYNAME
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn ripple btn-primary btnNewSave" type="submit">Save</button>
+                <button class="btn ripple btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal effect-flip-horizontal" id="frmEditCategory">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-content-demo">
+            <div class="modal-header">
+                <h6 class="modal-title">Edit Category</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="frmEditCategoryFormData">
+                    <div class="form-group">
+                        <label>Category Name</label> <input class="form-control txtEditCategoryName" name="txtEditCategoryName" placeholder="Enter category name" type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Parent Category</label>
+                        <select class="form-control select2 cmbEditCategory" name="cmbEditCategory" style="width:100%;">
+                            <option value="-1">
+                                Seçiniz
+                            </option>
+                            @if (Model.Data.Count > 0)
+                            {
+                                foreach (var item in Model.Data)
+                                {
+                                    <option value="@item.CATEGORYID">
+                                        @item.CATEGORYNAME
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn ripple btn-primary btnEditSave" type="submit">Save</button>
+                <button class="btn ripple btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="@Url.Content("~/Scripts/Azira/assets/js/modal.js")"></script>
+
+<!--- Category.js --->
+<script src="@Url.Content("~/Scripts/Views/Category/Category.js")"></script>
