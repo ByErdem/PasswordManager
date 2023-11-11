@@ -1,5 +1,6 @@
-<div class="demo-control"><a href="#" data-result-as="html">html</a><a href="#" data-result-as="src">source</a><a href="#" data-result-as="debug">debug</a></div>
-<div class="result-html full-height"><hr>
+<section class="col-xs-6 full-height">
+          <div class="demo-control"><a href="#" data-result-as="html">html</a><a href="#" data-result-as="src">source</a><a href="#" data-result-as="debug">debug</a></div>
+          <div class="result-html full-height"><hr>
 <h1 class="line" data-line="2">PasswordManager</h1>
 <h3 class="line" data-line="3">Örnek bir .Net Framework Asp.Net MVC5 Projesidir <img class="emoji" draggable="false" alt="😎" src="https://twemoji.maxcdn.com/v/14.0.2/72x72/1f60e.png"></h3>
 <p class="line" data-line="4"><img src="https://octodex.github.com/images/stormtroopocat.jpg" alt="Stormtroopocat" title="The Stormtroopocat"></p>
@@ -13,3 +14,6 @@
 <li>RabbitMQ</li>
 </ul>
 </div>
+          <pre class="hljs result-src full-height"><code class="result-src-content full-height"></code></pre>
+          <pre class="hljs result-debug full-height"><code class="result-debug-content full-height"></code></pre>
+        </section>
