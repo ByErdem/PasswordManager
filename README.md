@@ -12,6 +12,4 @@
 <li>RabbitMQ</li>
 </ul>
 </div>
-<pre class="hljs result-src full-height"><code class="result-src-content full-height"></code></pre>
-<pre class="hljs result-debug full-height"><code class="result-debug-content full-height"></code></pre>
 </section>
