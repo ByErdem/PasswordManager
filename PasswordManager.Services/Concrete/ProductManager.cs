@@ -51,7 +51,6 @@ namespace PasswordManager.Services.Concrete
                 await entity.SaveChangesAsync();
 
                 productDto = _mapper.Map<ProductDto>(newProduct);
-                productDto.CATEGORYNAME = await _categoryService.FindParentCategoryName(productDto.CATEGORYID);
 
                 rsp.Data = productDto;
                 rsp.ResultStatus = ResultStatus.Success;
@@ -71,7 +70,6 @@ namespace PasswordManager.Services.Concrete
                     {
                         product.CATEGORYID = productDto.CATEGORYID;
                         newProductDto.CATEGORYID = productDto.CATEGORYID;
-                        newProductDto.CATEGORYNAME = await _categoryService.FindParentCategoryName(productDto.CATEGORYID);
                     }
 
                     await entity.SaveChangesAsync();
@@ -172,15 +170,6 @@ namespace PasswordManager.Services.Concrete
             if (products.Count > 0)
             {
                 rsp.Data = _mapper.Map<List<ProductDto>>(products);
-
-                for (int i = 0; i < rsp.Data.Count; i++)
-                {
-                    if (rsp.Data[i].CATEGORYID > 0)
-                    {
-                        rsp.Data[i].CATEGORYNAME = await _categoryService.FindParentCategoryName(rsp.Data[i].CATEGORYID);
-                    }
-                }
-
                 rsp.ResultStatus = ResultStatus.Success;
                 rsp.SuccessMessage = $"Toplamda {products.Count} adet kategori listelendi";
             }

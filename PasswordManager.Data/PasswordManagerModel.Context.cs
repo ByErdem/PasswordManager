@@ -23,12 +23,13 @@ namespace PasswordManager.Data
         public static string ConnectionString()
         {
             string server = "DESKTOP-JCSFFJ8";
-            string databaseName = "CafeMenu";
+            string databaseName = "PasswordManager";
             string userName = "sa";
             string password = "123";
-            string model = "PasswordManagerModel";
-            string metaData = "metadata=res://*/"+ model + ".csdl|res://*/"+ model + ".ssdl|res://*/"+ model + ".msl";
-            return $"{metaData};provider=System.Data.SqlClient;provider connection string=\"data source={server};database={databaseName};user id={userName};password={password};MultipleActiveResultSets=True;App=EntityFramework\"";
+            string model = databaseName + "Model";
+            string metaData = "metadata=res://*/" + model + ".csdl|res://*/" + model + ".ssdl|res://*/" + model + ".msl";
+            string provider = "provider=System.Data.SqlClient";
+            return $"{metaData};{provider};provider connection string=\"data source={server};database={databaseName};user id={userName};password={password};MultipleActiveResultSets=True;App=EntityFramework\"";
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -36,10 +37,10 @@ namespace PasswordManager.Data
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<CATEGORY> CATEGORY { get; set; }
         public virtual DbSet<PRODUCT> PRODUCT { get; set; }
         public virtual DbSet<PRODUCTPROPERTY> PRODUCTPROPERTY { get; set; }
         public virtual DbSet<PROPERTY> PROPERTY { get; set; }
+        public virtual DbSet<USER> USER { get; set; }
     }
 }

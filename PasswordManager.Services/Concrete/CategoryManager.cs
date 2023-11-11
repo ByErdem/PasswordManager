@@ -30,14 +30,6 @@ namespace PasswordManager.Services.Concrete
             if (category == null)
             {
                 var newCategory = _mapper.Map<CATEGORY>(categoryDto);
-                if (categoryDto.PARENTCATEGORYID == -1)
-                {
-                    newCategory.PARENTCATEGORYID = null;
-                }
-                else
-                {
-                    newCategory.PARENTCATEGORYID = categoryDto.PARENTCATEGORYID;
-                }
 
                 newCategory.CREATORUSERID = 1;
                 newCategory.CREATEDDATE = DateTime.Now;
@@ -47,11 +39,6 @@ namespace PasswordManager.Services.Concrete
                 await entity.SaveChangesAsync();
 
                 var newCategoryDto = _mapper.Map<CategoryDto>(newCategory);
-
-                if (newCategoryDto.PARENTCATEGORYID != -1 && newCategoryDto.PARENTCATEGORYID != 0)
-                {
-                    newCategoryDto.PARENTCATEGORYNAME = await FindParentCategoryName((int)newCategory.PARENTCATEGORYID);
-                }
 
                 rsp.ResultStatus = ResultStatus.Success;
                 rsp.SuccessMessage = "Kategori başarıyla eklendi.";
@@ -64,13 +51,6 @@ namespace PasswordManager.Services.Concrete
                     var newCategoryDto = _mapper.Map<CategoryDto>(category);
 
                     category.ISDELETED = false;
-
-                    if (categoryDto.PARENTCATEGORYID > 0)
-                    {
-                        category.PARENTCATEGORYID = categoryDto.PARENTCATEGORYID;
-                        newCategoryDto.PARENTCATEGORYID = categoryDto.PARENTCATEGORYID;
-                        newCategoryDto.PARENTCATEGORYNAME = await FindParentCategoryName(categoryDto.PARENTCATEGORYID);
-                    }
 
                     await entity.SaveChangesAsync();
 
@@ -98,17 +78,6 @@ namespace PasswordManager.Services.Concrete
             if (category != null)
             {
                 category.CATEGORYNAME = categoryDto.CATEGORYNAME;
-
-                if (categoryDto.PARENTCATEGORYID != -1 && categoryDto.PARENTCATEGORYID != 0)
-                {
-                    category.PARENTCATEGORYID = categoryDto.PARENTCATEGORYID;
-                    categoryDto.PARENTCATEGORYNAME = await FindParentCategoryName(categoryDto.PARENTCATEGORYID);
-                }
-                else
-                {
-                    category.PARENTCATEGORYID = null;
-                    categoryDto.PARENTCATEGORYNAME = "";
-                }
 
                 await entity.SaveChangesAsync();
 
@@ -193,81 +162,6 @@ namespace PasswordManager.Services.Concrete
             return rsp;
         }
 
-        public async Task<string> FindParentCategoryName(int CATEGORYID)
-        {
-            var categoryDto = new CategoryDto
-            {
-                CATEGORYID = CATEGORYID
-            };
-
-            var category = await Get(categoryDto);
-            return category.Data.CATEGORYNAME;
-        }
-
-        public async Task<ResponseDto<List<CategoryDto>>> GetMainCategories()
-        {
-            var rsp = new ResponseDto<List<CategoryDto>>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
-
-            var categories = await entity.CATEGORY.Where(x => x.ISDELETED == false && x.PARENTCATEGORYID == null).ToListAsync();
-
-            if (categories.Count > 0)
-            {
-                rsp.Data = _mapper.Map<List<CategoryDto>>(categories);
-
-                for (int i = 0; i < rsp.Data.Count; i++)
-                {
-                    if (rsp.Data[i].PARENTCATEGORYID > 0)
-                    {
-                        rsp.Data[i].PARENTCATEGORYNAME = await FindParentCategoryName(rsp.Data[i].PARENTCATEGORYID);
-                    }
-                }
-
-                rsp.ResultStatus = ResultStatus.Success;
-                rsp.SuccessMessage = $"Toplamda {categories.Count} adet kategori listelendi";
-            }
-            else
-            {
-                rsp.Data = new List<CategoryDto>();
-                rsp.ResultStatus = ResultStatus.Error;
-                rsp.ErrorMessage = "Sistemde tanımlı bir kategori yok.";
-            }
-
-            return rsp;
-        }
-
-        public async Task<ResponseDto<List<CategoryDto>>> GetSubCategories(int CategoryId)
-        {
-            var rsp = new ResponseDto<List<CategoryDto>>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
-
-            var categories = await entity.CATEGORY.Where(x => x.ISDELETED == false && x.PARENTCATEGORYID != null && x.PARENTCATEGORYID == CategoryId).ToListAsync();
-
-            if (categories.Count > 0)
-            {
-                rsp.Data = _mapper.Map<List<CategoryDto>>(categories);
-
-                for (int i = 0; i < rsp.Data.Count; i++)
-                {
-                    if (rsp.Data[i].PARENTCATEGORYID > 0)
-                    {
-                        rsp.Data[i].PARENTCATEGORYNAME = await FindParentCategoryName(rsp.Data[i].PARENTCATEGORYID);
-                    }
-                }
-
-                rsp.ResultStatus = ResultStatus.Success;
-                rsp.SuccessMessage = $"Toplamda {categories.Count} adet kategori listelendi";
-            }
-            else
-            {
-                rsp.Data = new List<CategoryDto>();
-                rsp.ResultStatus = ResultStatus.Error;
-                rsp.ErrorMessage = "Sistemde tanımlı bir kategori yok.";
-            }
-
-            return rsp;
-        }
-
         public async Task<ResponseDto<List<CategoryDto>>> GetAll()
         {
             var rsp = new ResponseDto<List<CategoryDto>>();
@@ -278,43 +172,12 @@ namespace PasswordManager.Services.Concrete
             if (categories.Count > 0)
             {
                 rsp.Data = _mapper.Map<List<CategoryDto>>(categories);
-
-                for (int i = 0; i < rsp.Data.Count; i++)
-                {
-                    if (rsp.Data[i].PARENTCATEGORYID > 0)
-                    {
-                        rsp.Data[i].PARENTCATEGORYNAME = await FindParentCategoryName(rsp.Data[i].PARENTCATEGORYID);
-                    }
-                }
-
                 rsp.ResultStatus = ResultStatus.Success;
                 rsp.SuccessMessage = $"Toplamda {categories.Count} adet kategori listelendi";
             }
             else
             {
                 rsp.Data = new List<CategoryDto>();
-                rsp.ResultStatus = ResultStatus.Error;
-                rsp.ErrorMessage = "Sistemde tanımlı bir kategori yok.";
-            }
-
-            return rsp;
-        }
-
-        public async Task<ResponseDto<List<MCategory>>> GetAllByParentID(MCategory categoryDto)
-        {
-            var rsp = new ResponseDto<List<MCategory>>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
-
-            var categories = await entity.CATEGORY.Where(x => x.PARENTCATEGORYID == categoryDto.PARENTCATEGORYID).ToListAsync();
-
-            if (categories.Count > 0)
-            {
-                rsp.Data = _mapper.Map<List<MCategory>>(categories);
-                rsp.ResultStatus = ResultStatus.Success;
-                rsp.SuccessMessage = $"Toplamda {categories.Count} adet kategori listelendi";
-            }
-            else
-            {
                 rsp.ResultStatus = ResultStatus.Error;
                 rsp.ErrorMessage = "Sistemde tanımlı bir kategori yok.";
             }

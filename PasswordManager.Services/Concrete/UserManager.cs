@@ -18,15 +18,17 @@ namespace PasswordManager.Services.Concrete
         private readonly IRedisCacheService _redisCacheService;
         private readonly ITokenService _tokenService;
         private readonly IRabbitMQService _rabbitMQService;
+        private readonly ISessionService _sessionService;
 
 
-        public UserManager(IMapper mapper, IEncryptionService encryptionService, ITokenService tokenService, RedisCacheManager redisCacheService, IRabbitMQService rabbitMQService)
+        public UserManager(IMapper mapper, IEncryptionService encryptionService, ITokenService tokenService, RedisCacheManager redisCacheService, IRabbitMQService rabbitMQService, ISessionService sessionService)
         {
             _mapper = mapper;
             _encryptionService = encryptionService;
             _tokenService = tokenService;
             _redisCacheService = redisCacheService;
             _rabbitMQService = rabbitMQService;
+            _sessionService = sessionService;
         }
 
         public async Task<ResponseDto<MUser>> Register(UserRegisterDto user)
@@ -85,12 +87,19 @@ namespace PasswordManager.Services.Concrete
                             GuidKey = Guid.NewGuid().ToString()
                         };
 
+                        //Client verilerini direk Session'da tutmak sakıncalı olabilir.
+                        //Sadece session'da client verilerine karşılık bir guid'i tutmak ve tüm bilgileri redis'de saklamak daha güvenli olacaktır.
+                        //Normalde client tarafına bir guid gönderiyoruz ve token doğrulaması için bu guid kullanılıyor.
+                        //Ancak herhangi bir menüden örneğin /Dashboard/Index gibi bir istek geldiğinde, bunun üzerinden gelebilecek bir token olmadığı için
+                        //Session'da bir anahtar değeri saklamamız gerekiyor.
+                        _sessionService.SetSessionValue("GuidKey", dto.GuidKey);
                         await _redisCacheService.SetAsync(dto.GuidKey, JsonConvert.SerializeObject(dto));
 
                         //Burada amacımız loglama yapmak.
                         //Login bilgileri rabbitmq'ya gönderilerek kuyruğa alınacak.
                         //Daha sonra cronjob ile rabbitmq receiver yaparak alınan verileri log4net kullanarak loglayacağız.
                         await _rabbitMQService.SendMessage("Login", JsonConvert.SerializeObject(dto));
+                        
 
                         //User'a önemli bilgilerin gitmemesi için temizliyoruz.
                         dto.Username = "";

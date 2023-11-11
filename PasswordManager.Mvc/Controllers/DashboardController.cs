@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PasswordManager.Mvc.Models.Attributes;
+using PasswordManager.Services.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,17 +20,19 @@ namespace PasswordManager.Mvc.Controllers
         }
 
 
+
         public ActionResult Index()
         {
             return View();
         }
+
 
         [CustomAuthorize]
 
         public async Task<ActionResult> GetCounts()
         {
             var result = await _dashboardService.GetCounts();
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

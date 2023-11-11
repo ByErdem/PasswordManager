@@ -16,7 +16,6 @@ namespace PasswordManager.Data
     {
         public int CATEGORYID { get; set; }
         public string CATEGORYNAME { get; set; }
-        public Nullable<int> PARENTCATEGORYID { get; set; }
         public Nullable<bool> ISDELETED { get; set; }
         public Nullable<System.DateTime> CREATEDDATE { get; set; }
         public Nullable<int> CREATORUSERID { get; set; }

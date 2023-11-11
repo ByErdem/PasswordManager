@@ -15,7 +15,7 @@
             "PRODUCTID": Number(productid)
         }
 
-        CallRequest("/Product/Delete", data, function (rsp) {
+        CallRequest("/Product/Delete", data, null, true, function (rsp) {
             var tr = $(e).parent().parent();
             $(tr).remove();
             PrintCounts();
@@ -41,7 +41,7 @@
                 "categoryId": Number(data.id)
             }
 
-            CallRequest("/Category/GetSubCategories", data, function (rsp) {
+            CallRequest("/Category/GetSubCategories", data, null, true, function (rsp) {
                 FillSelect2WithSubCategories(".cmbSubCategory", rsp.Data, undefined, function (data2) {
                     console.log(data2)
                 });
@@ -68,7 +68,7 @@
         }
 
 
-        CallRequest("/Product/Create", data, function (rsp) {
+        CallRequest("/Product/Create", data, null, true, function (rsp) {
 
             if (rsp.ResultStatus == 0) {
 

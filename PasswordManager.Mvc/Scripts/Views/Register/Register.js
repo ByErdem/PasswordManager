@@ -10,7 +10,7 @@ $(function () {
             Password: $(".txtPassword").val(),
         }
 
-        CallRequest("/Login/Register", user, function (rsp) {
+        CallRequest("/Login/Register", user, null, false, function (rsp) {
             if (rsp.IsSuccess) {
                 window.location.replace("/Dashboard");
             }

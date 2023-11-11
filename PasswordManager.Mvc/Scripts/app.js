@@ -1,38 +1,53 @@
 ﻿
-function CallRequest(link, data, event) {
-    var token = 'Bearer ' + localStorage.getItem("guid")
+function CallRequest(link, data, object, tokenNeeded, event) {
+    var token = localStorage.getItem("guid");
 
-    if (data != undefined) {
-
-        $.ajax({
-            url: link,
-            type: 'POST',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Authorization', token);
-            },
-            data: data,
-            success: function (rsp) {
-                event(rsp)
-            },
-            error: function () { },
-        });
-
-    }
-    else {
-        $.ajax({
-            type: "POST",
-            url: link,
-            contentType: 'application/json; charset=utf-8',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Authorization', token);
-            },
-            success: function (rsp) {
+    var settings = {
+        url: link,
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8',
+        success: function (rsp) {
+            if (object != null) {
+                event(rsp, null, object);
+            } else {
                 event(rsp);
-            },
-            error: function (req, status, error) {
-
             }
-        });
+        },
+        error: function (req, status, error) {
+            console.error("Error:", status, error);
+            if (object != null) {
+                event(null, error, object);
+            } else {
+                event(null, error);
+            }
+        }
+    };
+
+    // Token varsa, 'beforeSend' fonksiyonunu ayarlar
+    if (tokenNeeded) {
+        if (token) {
+            settings.beforeSend = function (xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            };
+        }
+    }
+
+
+    if (data) {
+        settings.type = "POST";
+        settings.data = JSON.stringify(data);
+    }
+
+    $.ajax(settings);
+}
+
+function checkTokenAndRedirect(url) {
+    var token = localStorage.getItem('guid');
+
+    if (!token) {
+        window.location.href = '/Login'; // Token yoksa login sayfasına yönlendir.
+    } else {
+        window.location.href = url; // Token varsa belirtilen URL'ye yönlendir.
     }
 }
 
@@ -74,7 +89,7 @@ function PrintCounts() {
     var UserCount = $.find("#UserCount");
 
     if (ProductCount.length != 0) {
-        CallRequest("/Dashboard/GetCounts", null, function (rsp) {
+        CallRequest("/Dashboard/GetCounts", null, null, true, function (rsp) {
             $(ProductCount[0]).text(rsp.Data.ProductCount)
             $(CategoryCount[0]).text(rsp.Data.CategoryCount)
             $(UserCount[0]).text(rsp.Data.UserCount)
@@ -84,7 +99,7 @@ function PrintCounts() {
 
 function FillSelect2(id, event) {
 
-    CallRequest("/Category/GetAll", null, function (rsp) {
+    CallRequest("/Category/GetAll", null, true, function (rsp) {
 
         let _selectIsOpen = false;
         // const selectedAmount = {};
@@ -257,7 +272,7 @@ function FillSelect2(id, event) {
 
 function FillSelect2WithMainCategories(id, event, selectedEvent) {
 
-    CallRequest("/Category/GetMainCategories", null, function (rsp) {
+    CallRequest("/Category/GetMainCategories", null, true, function (rsp) {
 
         let _selectIsOpen = false;
         // const selectedAmount = {};

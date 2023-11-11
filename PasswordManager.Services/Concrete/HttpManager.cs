@@ -12,7 +12,11 @@ namespace PasswordManager.Services.Concrete
 
         public async Task<int> SendHttpPostRequestAsync(string apiUrl, string data)
         {
-            _httpClient = new HttpClient();
+            //Bu sadece SSL'in gerekli olmadığı durumlarda test aşamasında kullanılabilir.
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+            _httpClient = new HttpClient(handler);
             var content = new StringContent(data, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync(apiUrl, content);
             if (response.IsSuccessStatusCode)

@@ -11,7 +11,7 @@ $(function () {
             "CATEGORYID": Number(categoryid)
         }
 
-        CallRequest("/Category/Delete", data, function (rsp) {
+        CallRequest("/Category/Delete", data, null, true, function (rsp) {
             var tr = $(e).parent().parent();
             $(tr).remove();
             PrintCounts();
@@ -34,20 +34,17 @@ $(function () {
         }
 
         var data = {
-            "CATEGORYNAME": formData[0].value,
-            "PARENTCATEGORYID": formData[1].value,
+            "CATEGORYNAME": formData[0].value
         }
 
-        CallRequest("/Category/Create", data, function (rsp) {
+        CallRequest("/Category/Create", data, null, true, function (rsp) {
 
             $("#frmNewCategory").modal("hide");
-
-            var PARENTCATEGORYNAME = rsp.Data.PARENTCATEGORYNAME ?? "";
             var CREATEDDATE = ParseDate(rsp.Data.CREATEDDATE);
             var CATEGORYID = rsp.Data.CATEGORYID;
             var COUNT = $("#tblCategory tr").length;
 
-            var newRow = "<tr><td>" + COUNT + "</td><td>" + rsp.Data.CATEGORYNAME + "</td><td>" + PARENTCATEGORYNAME + "</td><td>" + CREATEDDATE + "</td>";
+            var newRow = "<tr><td>" + COUNT + "</td><td>" + rsp.Data.CATEGORYNAME + "</td><td>" + CREATEDDATE + "</td>";
             newRow += '<td><button categoryid="' + CATEGORYID + '" type="button" class="btn btn-danger btnUpdate" style="color:white;"><i class="fa fa-edit"></i></button>&nbsp;'
             newRow += '<button categoryid="' + CATEGORYID + '" type="button" class="btn btn-danger btnDelete" style="color:white;"><i class="far fa-trash-alt"></i></button></td></tr>';
 
@@ -89,15 +86,11 @@ $(function () {
 
         var data = {
             "CATEGORYID": rowData.CATEGORYID,
-            "CATEGORYNAME": formData[0].value,
-            "PARENTCATEGORYID": formData[1].value,
+            "CATEGORYNAME": formData[0].value
         }
 
-        console.log(data);
-
-        CallRequest("/Category/Update", data, function (rsp) {
+        CallRequest("/Category/Update", data, null, true, function (rsp) {
             $(tableRow[1]).text(rsp.Data.CATEGORYNAME);
-            $(tableRow[2]).text(rsp.Data.PARENTCATEGORYNAME);
             $("#frmEditCategory").modal("hide");
             PrintCounts();
         });
@@ -108,15 +101,6 @@ $(function () {
         rowData = JSON.parse($(this).attr("data"));
         //console.log(data);
         $("#frmEditCategory").modal("show");
-
-        if (rowData.PARENTCATEGORYID == 0) {
-            rowData.PARENTCATEGORYID = -1;
-        }
-
-        FillSelect2(".cmbEditCategory", function () {
-            $(".txtEditCategoryName").val(rowData.CATEGORYNAME);
-            $(".cmbEditCategory").val(rowData.PARENTCATEGORYID).trigger("change");
-        });
 
         tableRow = $(this).parent().parent().children();
     });
