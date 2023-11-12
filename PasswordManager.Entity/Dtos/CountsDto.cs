@@ -10,6 +10,6 @@ namespace PasswordManager.Entity.Dtos
     {
         public int UserCount { get; set; }
         public int CategoryCount { get; set; }
-        public int ProductCount { get; set; }
+        public int PasswordsCount { get; set; }
     }
 }

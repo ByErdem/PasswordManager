@@ -19,8 +19,6 @@ namespace PasswordManager.Mvc.Controllers
             _dashboardService = dashboardService;
         }
 
-
-
         public ActionResult Index()
         {
             return View();

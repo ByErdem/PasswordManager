@@ -63,7 +63,7 @@ namespace PasswordManager.Mvc.Controllers
         public async Task<ActionResult> GetAll()
         {
             var result = await _categoryService.GetAll();
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

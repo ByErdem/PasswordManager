@@ -13,6 +13,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using PasswordManager.Mvc.Models.Profiles;
+using System.Data.Entity;
 
 namespace PasswordManager.Mvc
 {
@@ -49,12 +50,12 @@ namespace PasswordManager.Mvc
             builder.RegisterType<EncryptionManager>().As<IEncryptionService>().AsSelf().SingleInstance();
             builder.RegisterType<UserManager>().As<IUserService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<CategoryManager>().As<ICategoryService>().AsSelf().InstancePerLifetimeScope();
-            builder.RegisterType<ProductManager>().As<IProductService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<DashboardManager>().As<IDashboardService>().AsSelf().InstancePerLifetimeScope();
-            builder.RegisterType<ProductPropertyManager>().As<IProductPropertyService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<TokenManager>().As<ITokenService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<RedisCacheManager>().As<IRedisCacheService>().AsSelf().InstancePerLifetimeScope();
+            builder.RegisterType<DbContextEntity>().As<IDbContextEntity>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<HttpManager>().As<IHttpService>().AsSelf().InstancePerLifetimeScope();
+            builder.RegisterType<MyPasswordsManager>().As<IMyPasswordsService>().AsSelf().InstancePerLifetimeScope();
             builder.RegisterType<SessionManager>().As<ISessionService>().SingleInstance();
 
             builder.RegisterControllers(typeof(MvcApplication).Assembly);

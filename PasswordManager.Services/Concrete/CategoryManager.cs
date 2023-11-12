@@ -15,28 +15,29 @@ namespace PasswordManager.Services.Concrete
     public class CategoryManager : ICategoryService
     {
         private readonly IMapper _mapper;
+        private readonly IDbContextEntity _entity;
 
-        public CategoryManager(IMapper mapper)
+        public CategoryManager(IMapper mapper, IDbContextEntity entity)
         {
             _mapper = mapper;
+            _entity = entity;
         }
 
         public async Task<ResponseDto<CategoryDto>> Create(CategoryDto categoryDto)
         {
             var rsp = new ResponseDto<CategoryDto>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
 
-            var category = await entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYNAME == categoryDto.CATEGORYNAME);
+            var category = await _entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYNAME == categoryDto.CATEGORYNAME);
             if (category == null)
             {
                 var newCategory = _mapper.Map<CATEGORY>(categoryDto);
 
-                newCategory.CREATORUSERID = 1;
+                newCategory.CREATORUSERID = -1;
                 newCategory.CREATEDDATE = DateTime.Now;
                 newCategory.ISDELETED = false;
 
-                entity.CATEGORY.Add(newCategory);
-                await entity.SaveChangesAsync();
+                _entity.CATEGORY.Add(newCategory);
+                await _entity.SaveChangesAsync();
 
                 var newCategoryDto = _mapper.Map<CategoryDto>(newCategory);
 
@@ -52,7 +53,7 @@ namespace PasswordManager.Services.Concrete
 
                     category.ISDELETED = false;
 
-                    await entity.SaveChangesAsync();
+                    await _entity.SaveChangesAsync();
 
                     rsp.ResultStatus = ResultStatus.Success;
                     rsp.SuccessMessage = "Kategori başarıyla eklendi.";
@@ -72,14 +73,13 @@ namespace PasswordManager.Services.Concrete
         public async Task<ResponseDto<CategoryDto>> Update(CategoryDto categoryDto)
         {
             var rsp = new ResponseDto<CategoryDto>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
 
-            var category = await entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == categoryDto.CATEGORYID);
+            var category = await _entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == categoryDto.CATEGORYID);
             if (category != null)
             {
                 category.CATEGORYNAME = categoryDto.CATEGORYNAME;
 
-                await entity.SaveChangesAsync();
+                await _entity.SaveChangesAsync();
 
                 rsp.ResultStatus = ResultStatus.Success;
                 rsp.SuccessMessage = "Değişiklikler başarıyla kaydedildi.";
@@ -97,13 +97,12 @@ namespace PasswordManager.Services.Concrete
         public async Task<ResponseDto<int>> Delete(MCategory categoryDto)
         {
             var rsp = new ResponseDto<int>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
 
-            var category = await entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == categoryDto.CATEGORYID);
+            var category = await _entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == categoryDto.CATEGORYID);
             if (category != null)
             {
                 category.ISDELETED = true;
-                await entity.SaveChangesAsync();
+                await _entity.SaveChangesAsync();
 
                 rsp.ResultStatus = ResultStatus.Success;
                 rsp.SuccessMessage = $"{category.CATEGORYNAME} isimli kategori başarıyla silindi.";
@@ -121,13 +120,12 @@ namespace PasswordManager.Services.Concrete
         public async Task<ResponseDto<int>> HardDelete(MCategory categoryDto)
         {
             var rsp = new ResponseDto<int>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
 
-            var category = await entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == categoryDto.CATEGORYID);
+            var category = await _entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == categoryDto.CATEGORYID);
             if (category != null)
             {
-                entity.CATEGORY.Remove(category);
-                await entity.SaveChangesAsync();
+                _entity.CATEGORY.Remove(category);
+                await _entity.SaveChangesAsync();
 
                 rsp.ResultStatus = ResultStatus.Success;
                 rsp.SuccessMessage = $"{categoryDto.CATEGORYNAME} isimli kategori sistemden başarıyla silindi.";
@@ -145,8 +143,7 @@ namespace PasswordManager.Services.Concrete
         public async Task<ResponseDto<CategoryDto>> Get(CategoryDto dto)
         {
             var rsp = new ResponseDto<CategoryDto>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
-            var category = await entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == dto.CATEGORYID);
+            var category = await _entity.CATEGORY.FirstOrDefaultAsync(x => x.CATEGORYID == dto.CATEGORYID);
             if (category != null)
             {
                 rsp.Data = _mapper.Map<CategoryDto>(category);
@@ -165,9 +162,7 @@ namespace PasswordManager.Services.Concrete
         public async Task<ResponseDto<List<CategoryDto>>> GetAll()
         {
             var rsp = new ResponseDto<List<CategoryDto>>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
-
-            var categories = await entity.CATEGORY.Where(x => x.ISDELETED == false).ToListAsync();
+            var categories = await _entity.CATEGORY.Where(x => x.ISDELETED == false).ToListAsync();
 
             if (categories.Count > 0)
             {

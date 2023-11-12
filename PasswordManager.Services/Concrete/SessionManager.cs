@@ -30,12 +30,22 @@ namespace PasswordManager.Services.Concrete
 
         public string GetSessionValue(string key)
         {
-            return HttpContext.Current.Session[key].ToString();
+            var status = HttpContext.Current.Session[key];
+            if (status != null)
+            {
+                return HttpContext.Current.Session[key].ToString();
+            }
+            return null;
         }
 
         public bool Validate()
         {
             var guidKey = GetSessionValue("GuidKey");
+            if (guidKey == null)
+            {
+                return false;
+            }
+
             var parameters = Task.Run(async () => await _redisCacheService.GetAsync(guidKey)).Result;
             var userParameter = JsonConvert.DeserializeObject<UserParameter>(parameters);
             return _tokenService.ValidateToken(userParameter.Token, userParameter.SecretKey);

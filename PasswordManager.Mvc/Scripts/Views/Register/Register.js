@@ -10,11 +10,19 @@ $(function () {
             Password: $(".txtPassword").val(),
         }
 
-        CallRequest("/Login/Register", user, null, false, function (rsp) {
-            if (rsp.IsSuccess) {
-                window.location.replace("/Dashboard");
-            }
-        });
 
+        var settings = {
+            link: "/Login/Register",
+            data: user,
+            object: null,
+            tokenNeeded: false,
+            event: function (rsp) {
+                if (rsp.IsSuccess) {
+                    window.location.replace("/Dashboard");
+                }
+            }
+        }
+
+        CallRequest(settings);
     });
 });

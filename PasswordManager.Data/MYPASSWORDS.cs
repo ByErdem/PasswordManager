@@ -12,10 +12,14 @@ namespace PasswordManager.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PROPERTY
+    public partial class MYPASSWORDS
     {
-        public string PROPERTYID { get; set; }
-        public string KEY { get; set; }
-        public string VALUE { get; set; }
+        public int ID { get; set; }
+        public Nullable<int> USERID { get; set; }
+        public string NAME { get; set; }
+        public string URL { get; set; }
+        public Nullable<int> CATEGORYID { get; set; }
+        public string USERNAME { get; set; }
+        public string PASSWORD { get; set; }
     }
 }

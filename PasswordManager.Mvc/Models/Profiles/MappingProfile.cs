@@ -16,9 +16,6 @@ namespace PasswordManager.Mvc.Models.Profiles
             CreateMap<USER, MUser>().ReverseMap();
             CreateMap<MUser, USER>().ReverseMap();
 
-            CreateMap<PRODUCT, ProductDto>().ReverseMap();
-            CreateMap<ProductDto, PRODUCT>().ReverseMap();
-
             CreateMap<CATEGORY, MCategory>().ReverseMap();
             CreateMap<MCategory, CATEGORY>().ReverseMap();
 
@@ -27,6 +24,14 @@ namespace PasswordManager.Mvc.Models.Profiles
 
             CreateMap<List<CATEGORY>, List<MCategory>>().ReverseMap();
             CreateMap<List<MCategory>, List<CATEGORY>>().ReverseMap();
+
+            CreateMap<MYPASSWORDS,MyPasswordDto>().ReverseMap();
+            CreateMap<MyPasswordDto,MYPASSWORDS>().ReverseMap();
+
+            CreateMap<List<MYPASSWORDS>, List<MyPasswordDto>>().ReverseMap();
+            CreateMap<List<MyPasswordDto>, List<MYPASSWORDS>>().ReverseMap();
+
+
         }
     }
 }

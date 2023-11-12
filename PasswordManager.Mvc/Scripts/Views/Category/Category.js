@@ -11,11 +11,20 @@ $(function () {
             "CATEGORYID": Number(categoryid)
         }
 
-        CallRequest("/Category/Delete", data, null, true, function (rsp) {
-            var tr = $(e).parent().parent();
-            $(tr).remove();
-            PrintCounts();
-        });
+
+        var settings = {
+            link: "/Category/Delete",
+            data: data,
+            object: null,
+            tokenNeeded: true,
+            event: function (rsp) {
+                var tr = $(e).parent().parent();
+                $(tr).remove();
+                PrintCounts();
+            }
+        }
+
+        CallRequest(settings);
     }
 
     $('.select2').select2({
@@ -37,31 +46,38 @@ $(function () {
             "CATEGORYNAME": formData[0].value
         }
 
-        CallRequest("/Category/Create", data, null, true, function (rsp) {
 
-            $("#frmNewCategory").modal("hide");
-            var CREATEDDATE = ParseDate(rsp.Data.CREATEDDATE);
-            var CATEGORYID = rsp.Data.CATEGORYID;
-            var COUNT = $("#tblCategory tr").length;
+        var settings = {
+            link: "/Category/Create",
+            data: data,
+            object: null,
+            tokenNeeded: true,
+            event: function (rsp) {
+                $("#frmNewCategory").modal("hide");
+                var CREATEDDATE = ParseDate(rsp.Data.CREATEDDATE);
+                var CATEGORYID = rsp.Data.CATEGORYID;
+                var COUNT = $("#tblCategory tr").length;
 
-            var newRow = "<tr><td>" + COUNT + "</td><td>" + rsp.Data.CATEGORYNAME + "</td><td>" + CREATEDDATE + "</td>";
-            newRow += '<td><button categoryid="' + CATEGORYID + '" type="button" class="btn btn-danger btnUpdate" style="color:white;"><i class="fa fa-edit"></i></button>&nbsp;'
-            newRow += '<button categoryid="' + CATEGORYID + '" type="button" class="btn btn-danger btnDelete" style="color:white;"><i class="far fa-trash-alt"></i></button></td></tr>';
+                var newRow = "<tr><td>" + COUNT + "</td><td>" + rsp.Data.CATEGORYNAME + "</td><td>" + CREATEDDATE + "</td>";
+                newRow += '<td><button categoryid="' + CATEGORYID + '" type="button" class="btn btn-danger btnUpdate" style="color:white;"><i class="fa fa-edit"></i></button>&nbsp;'
+                newRow += '<button categoryid="' + CATEGORYID + '" type="button" class="btn btn-danger btnDelete" style="color:white;"><i class="far fa-trash-alt"></i></button></td></tr>';
 
-            var NoData = $.find("#NoData");
-            if (NoData.length != 0) {
-                $(NoData[0]).remove();
+                var NoData = $.find("#NoData");
+                if (NoData.length != 0) {
+                    $(NoData[0]).remove();
+                }
+
+                $('#tblCategory > tbody:last-child').append(newRow);
+
+                $(document).on("click", ".btnDelete" + CATEGORYID, function (e) {
+                    DeleteCategory(e);
+                });
+
+                PrintCounts();
             }
+        }
 
-            $('#tblCategory > tbody:last-child').append(newRow);
-
-            $(document).on("click", ".btnDelete" + CATEGORYID, function (e) {
-                DeleteCategory(e);
-            });
-
-            PrintCounts();
-
-        });
+        CallRequest(settings);
     });
 
     $(document).on("click", ".btnEditSave", function (e) {
@@ -89,11 +105,19 @@ $(function () {
             "CATEGORYNAME": formData[0].value
         }
 
-        CallRequest("/Category/Update", data, null, true, function (rsp) {
-            $(tableRow[1]).text(rsp.Data.CATEGORYNAME);
-            $("#frmEditCategory").modal("hide");
-            PrintCounts();
-        });
+        var settings = {
+            link: "/Category/Update",
+            data: data,
+            object: null,
+            tokenNeeded: true,
+            event: function (rsp) {
+                $(tableRow[1]).text(rsp.Data.CATEGORYNAME);
+                $("#frmEditCategory").modal("hide");
+                PrintCounts();
+            }
+        }
+
+        CallRequest(settings);
     });
 
     $(document).on("click", ".btnUpdate", function (e) {

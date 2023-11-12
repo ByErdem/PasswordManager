@@ -12,5 +12,6 @@ namespace PasswordManager.Services.Abstract
         Task<ResponseDto<int>> Delete(MCategory categoryDto);
         Task<ResponseDto<int>> HardDelete(MCategory categoryDto);
         Task<ResponseDto<List<CategoryDto>>> GetAll();
+        Task<ResponseDto<CategoryDto>> Get(CategoryDto dto);
     }
 }

@@ -19,9 +19,10 @@ namespace PasswordManager.Services.Concrete
         private readonly ITokenService _tokenService;
         private readonly IRabbitMQService _rabbitMQService;
         private readonly ISessionService _sessionService;
+        private readonly IDbContextEntity _entity;
 
 
-        public UserManager(IMapper mapper, IEncryptionService encryptionService, ITokenService tokenService, RedisCacheManager redisCacheService, IRabbitMQService rabbitMQService, ISessionService sessionService)
+        public UserManager(IMapper mapper, IEncryptionService encryptionService, ITokenService tokenService, RedisCacheManager redisCacheService, IRabbitMQService rabbitMQService, ISessionService sessionService, IDbContextEntity entity)
         {
             _mapper = mapper;
             _encryptionService = encryptionService;
@@ -29,13 +30,13 @@ namespace PasswordManager.Services.Concrete
             _redisCacheService = redisCacheService;
             _rabbitMQService = rabbitMQService;
             _sessionService = sessionService;
+            _entity = entity;
         }
 
         public async Task<ResponseDto<MUser>> Register(UserRegisterDto user)
         {
             var rsp = new ResponseDto<MUser>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
-            var usr = await entity.USER.FirstOrDefaultAsync(x => x.USERNAME == user.Username);
+            var usr = await _entity.USER.FirstOrDefaultAsync(x => x.USERNAME == user.Username);
             if (usr != null)
             {
                 rsp.ResultStatus = ResultStatus.Error;
@@ -52,8 +53,8 @@ namespace PasswordManager.Services.Concrete
                 SURNAME = user.Surname
             };
 
-            entity.USER.Add(newUser);
-            await entity.SaveChangesAsync();
+            _entity.USER.Add(newUser);
+            await _entity.SaveChangesAsync();
 
             rsp.ResultStatus = ResultStatus.Success;
             rsp.Data = _mapper.Map<MUser>(newUser);
@@ -65,15 +66,14 @@ namespace PasswordManager.Services.Concrete
         public async Task<ResponseDto<UserParameter>> SignIn(UserLoginDto userDto)
         {
             var rsp = new ResponseDto<UserParameter>();
-            PasswordManagerEntities entity = new PasswordManagerEntities();
 
             try
             {
-                var usr = await entity.USER.FirstOrDefaultAsync(x => x.USERNAME == userDto.Username);
+                var usr = await _entity.USER.FirstOrDefaultAsync(x => x.USERNAME == userDto.Username);
                 if (usr != null)
                 {
                     var encrypted = _encryptionService.AESEncrypt(userDto.Password + usr.SALTPASSWORD);
-                    var usrpass = await entity.USER.FirstOrDefaultAsync(x => x.USERNAME == userDto.Username && x.HASHPASSWORD == encrypted);
+                    var usrpass = await _entity.USER.FirstOrDefaultAsync(x => x.USERNAME == userDto.Username && x.HASHPASSWORD == encrypted);
                     if (usrpass != null)
                     {
                         var tokenParameters = _tokenService.GenerateToken(userDto.Username);
