@@ -1,4 +1,5 @@
 ﻿using PasswordManager.Entity.Dtos;
+using PasswordManager.Mvc.Models.Attributes;
 using PasswordManager.Services.Abstract;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -36,6 +37,21 @@ namespace PasswordManager.Mvc.Controllers
         {
             var result = await _userService.Register(user);
             return Json(result);
+        }
+
+        [CustomAuthorize]
+
+        public async Task<ActionResult> GetUserInformations()
+        {
+            var result = await _userService.GetUserInformations();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [CustomAuthorize]
+        public async Task<ActionResult> Logout()
+        {
+            var result = await _userService.Logout();
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

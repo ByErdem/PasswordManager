@@ -17,12 +17,14 @@ namespace PasswordManager.Services.Concrete
         private readonly IMapper _mapper;
         private readonly IDbContextEntity _entity;
         private readonly ICategoryService _categoryService;
+        private readonly IUserService _userService;
 
-        public MyPasswordsManager(IMapper mapper, IDbContextEntity entity, ICategoryService categoryService)
+        public MyPasswordsManager(IMapper mapper, IDbContextEntity entity, ICategoryService categoryService, IUserService userService)
         {
             _mapper = mapper;
             _entity = entity;
             _categoryService = categoryService;
+            _userService = userService;
         }
 
         public async Task<ResponseDto<MyPasswordDto>> Create(MyPasswordDto myPasswordDto)
@@ -31,9 +33,18 @@ namespace PasswordManager.Services.Concrete
             var myPassword = await _entity.MYPASSWORDS.FirstOrDefaultAsync(x => x.NAME == myPasswordDto.NAME && x.CATEGORYID == myPasswordDto.CATEGORYID);
             if (myPassword == null)
             {
+                var userParameters = await _userService.GetUserFromRedis();
+                myPasswordDto.USERID = userParameters.Data.UserId;
                 var newMyPassword = _mapper.Map<MYPASSWORDS>(myPasswordDto);
                 _entity.MYPASSWORDS.Add(newMyPassword);
                 await _entity.SaveChangesAsync();
+
+                var myPassword2 = await Get(myPasswordDto.NAME, myPasswordDto.CATEGORYID);
+                var categoryDto = new CategoryDto();
+                categoryDto.CATEGORYID = myPassword2.Data.CATEGORYID;
+                var categoryRspDto = await _categoryService.Get(categoryDto);
+                myPasswordDto.CATEGORYNAME = categoryRspDto.Data.CATEGORYNAME;
+
 
                 rsp.ResultStatus = ResultStatus.Success;
                 rsp.SuccessMessage = "Şifre başarıyla eklendi.";
@@ -95,11 +106,17 @@ namespace PasswordManager.Services.Concrete
         public async Task<ResponseDto<List<MyPasswordDto>>> GetAll()
         {
             var rsp = new ResponseDto<List<MyPasswordDto>>();
-            var myPasswords = await _entity.MYPASSWORDS.ToListAsync();
+            var userId = await _userService.GetUserId();
+            var myPasswords = await _entity.MYPASSWORDS.Where(x => x.USERID == userId.Data).ToListAsync();
 
             if (myPasswords.Count > 0)
             {
-                var listDto = _mapper.Map<List<MyPasswordDto>>(myPasswords);
+
+                List<MyPasswordDto> listDto = new List<MyPasswordDto>();
+                foreach (var item in myPasswords)
+                {
+                    listDto.Add(_mapper.Map<MyPasswordDto>(item));
+                }
 
                 foreach (var item in listDto)
                 {
@@ -144,6 +161,25 @@ namespace PasswordManager.Services.Concrete
             return rsp;
         }
 
+
+        public async Task<ResponseDto<MyPasswordDto>> Get(string NAME,int CATEGORYID)
+        {
+            var rsp = new ResponseDto<MyPasswordDto>();
+            var myPassword = await _entity.MYPASSWORDS.FirstOrDefaultAsync(x => x.NAME == NAME && x.CATEGORYID == CATEGORYID);
+            if (myPassword != null)
+            {
+                rsp.Data = _mapper.Map<MyPasswordDto>(myPassword);
+                rsp.ResultStatus = ResultStatus.Success;
+                rsp.SuccessMessage = "Şifre kaydı alındı";
+            }
+            else
+            {
+                rsp.ResultStatus = ResultStatus.Error;
+                rsp.ErrorMessage = "Böyle bir kayıt bulunamadı";
+            }
+
+            return rsp;
+        }
 
     }
 }

@@ -28,14 +28,15 @@
                 <p class="tx-12 text-muted mb-3"></p>
                 <div class="table-responsive mb-0">
 
-                    <table id="tblCategory" class="table table-hover table-bordered mb-0 text-md-nowrap text-lg-nowrap text-xl-nowrap table-striped ">
+                    <table id="tblPasswords" class="table table-hover table-bordered mb-0 text-md-nowrap text-lg-nowrap text-xl-nowrap table-striped ">
                         <thead>
                             <tr>
                                 <th>Queue</th>
                                 <th>Password Name</th>
-                                <th>Category</th>
                                 <th>Url</th>
+                                <th>Username</th>
                                 <th>Password</th>
+                                <th>Category</th>
                                 <th>Process</th>
                             </tr>
                         </thead>
@@ -48,11 +49,12 @@
                                     <tr>
                                         <td>@(index+1)</td>
                                         <td>@item.NAME</td>
-                                        <td>@item.CATEGORYNAME</td>
                                         <td>@item.URL</td>
+                                        <td>@item.USERNAME</td>
                                         <td>@item.PASSWORD</td>
+                                        <td>@item.CATEGORYNAME</td>
                                         <td>
-                                            <button passwordId="@item.ID" data="@Newtonsoft.Json.JsonConvert.SerializeObject(item)" type="submit" class="btn btn-danger btnUpdate" style="color:white;"><i class="fa fa-edit"></i></button>
+                                            @*<button passwordId="@item.ID" data="@Newtonsoft.Json.JsonConvert.SerializeObject(item)" type="submit" class="btn btn-danger btnUpdate" style="color:white;"><i class="fa fa-edit"></i></button>*@
                                             <button passwordId="@item.ID" type="submit" class="btn btn-danger btnDelete" style="color:white;"><i class="far fa-trash-alt"></i></button>
                                         </td>
                                     </tr>
@@ -62,7 +64,7 @@
                             else
                             {
                                 <tr>
-                                    <td id="NoData" colspan="6" style="text-align:center; vertical-align:middle;">Kayıt Yok</td>
+                                    <td id="NoData" colspan="7" style="text-align:center; vertical-align:middle;">Kayıt Yok</td>
                                 </tr>
                             }
 
@@ -93,19 +95,10 @@
                     </div>
                     <div class="form-group">
                         <label>Category</label>
-                        <select class="form-control select2 cmbCategory" name="cmbCategory" style="width:100%;">
+                        <select class="form-control select2 cmbNewCategory" name="cmbNewCategory" style="width:100%;">
                             <option value="-1">
                                 Seçiniz
                             </option>
-                            @if (Model.Data.Count > 0)
-                            {
-                                foreach (var item in Model.Data)
-                                {
-                                    <option value="@item.CATEGORYID">
-                                        @item.CATEGORYNAME
-                                    </option>
-                                }
-                            }
                         </select>
                     </div>
                     <div class="form-group">
@@ -113,8 +106,16 @@
                         <input class="form-control txtUsername" name="txtUsername" placeholder="Enter username" type="text">
                     </div>
                     <div class="form-group">
-                        <label>User Name</label>
+                        <label>Password</label>
                         <input class="form-control txtPassword" name="txtPassword" placeholder="Enter password" type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password Length</label>
+                        <div class="input-group">
+                            <input class="form-control txtPasswordLength" name="txtPasswordLength" placeholder="Enter password length" value="12" type="text">
+                            <button class="btn ripple btn-primary btnGeneratePassword" type="submit">Generate</button>
+                        </div>
                     </div>
                 </form>
 
@@ -151,15 +152,6 @@
                             <option value="-1">
                                 Seçiniz
                             </option>
-                            @if (Model.Data.Count > 0)
-                            {
-                                foreach (var item in Model.Data)
-                                {
-                                    <option value="@item.CATEGORYID">
-                                        @item.CATEGORYNAME
-                                    </option>
-                                }
-                            }
                         </select>
                     </div>
                     <div class="form-group">

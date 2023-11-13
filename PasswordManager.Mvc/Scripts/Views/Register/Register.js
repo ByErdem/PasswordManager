@@ -10,6 +10,10 @@ $(function () {
             Password: $(".txtPassword").val(),
         }
 
+        if (user.Name == "" || user.Surname == "" || user.Username == "" || user.Password == "") {
+            swal("Uyarı", "Lütfen tüm bilgileri doldurunuz.", "error");
+        }
+
 
         var settings = {
             link: "/Login/Register",
@@ -17,8 +21,15 @@ $(function () {
             object: null,
             tokenNeeded: false,
             event: function (rsp) {
-                if (rsp.IsSuccess) {
-                    window.location.replace("/Dashboard");
+
+                if (rsp.ResultStatus == 0) {
+
+                    var user = {
+                        Username: $(".txtUsername").val(),
+                        Password: $(".txtPassword").val()
+                    }
+
+                    Login(user);
                 }
             }
         }

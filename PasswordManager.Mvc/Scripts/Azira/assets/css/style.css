@@ -32319,7 +32319,6 @@ a.tag-addon:hover {
 }
 
 .main-content:after {
-    padding-bottom:50px;
     content: "";
     height: 65px;
     background: linear-gradient(45deg, #f33057, var(--primary-bg-color));
@@ -52533,7 +52532,7 @@ textarea.parsley-success:focus {
 
     .main-content:after {
         content: "";
-        height: 280px !important;
+        height: 65px !important;
     }
 }
 

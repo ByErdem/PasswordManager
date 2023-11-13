@@ -41,7 +41,7 @@ namespace PasswordManager.Services.Concrete
         public bool Validate()
         {
             var guidKey = GetSessionValue("GuidKey");
-            if (guidKey == null)
+            if (guidKey == null || guidKey == "")
             {
                 return false;
             }

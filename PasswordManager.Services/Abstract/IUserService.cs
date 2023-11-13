@@ -9,5 +9,9 @@ namespace PasswordManager.Services.Abstract
     {
         Task<ResponseDto<UserParameter>> SignIn(UserLoginDto userDto);
         Task<ResponseDto<MUser>> Register(UserRegisterDto user);
+        Task<ResponseDto<UserParameter>> GetUserFromRedis();
+        Task<ResponseDto<int>> GetUserId();
+        Task<ResponseDto<UserInformationsDto>> GetUserInformations();
+        Task<ResponseDto<int>> Logout();
     }
 }

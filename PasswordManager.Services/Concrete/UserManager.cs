@@ -7,6 +7,7 @@ using PasswordManager.Services.Abstract;
 using PasswordManager.Shared.Concrete;
 using System;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PasswordManager.Services.Concrete
@@ -99,7 +100,7 @@ namespace PasswordManager.Services.Concrete
                         //Login bilgileri rabbitmq'ya gönderilerek kuyruğa alınacak.
                         //Daha sonra cronjob ile rabbitmq receiver yaparak alınan verileri log4net kullanarak loglayacağız.
                         await _rabbitMQService.SendMessage("Login", JsonConvert.SerializeObject(dto));
-                        
+
 
                         //User'a önemli bilgilerin gitmemesi için temizliyoruz.
                         dto.Username = "";
@@ -123,10 +124,66 @@ namespace PasswordManager.Services.Concrete
 
             }
 
+            return rsp;
+        }
 
+        public async Task<ResponseDto<UserParameter>> GetUserFromRedis()
+        {
+            var rsp = new ResponseDto<UserParameter>();
+            var guidKey = _sessionService.GetSessionValue("GuidKey");
+            var parameters = await _redisCacheService.GetAsync(guidKey);
+            var userParameter = JsonConvert.DeserializeObject<UserParameter>(parameters);
 
+            rsp.Data = userParameter;
+            rsp.ResultStatus = ResultStatus.Success;
+            rsp.SuccessMessage = "Kullanıcı parametreleri alındı.";
 
             return rsp;
         }
+
+        public async Task<ResponseDto<int>> GetUserId()
+        {
+            var rsp = new ResponseDto<int>();
+            var guidKey = _sessionService.GetSessionValue("GuidKey");
+            var parameters = await _redisCacheService.GetAsync(guidKey);
+            var userParameter = JsonConvert.DeserializeObject<UserParameter>(parameters);
+
+            rsp.Data = userParameter.UserId;
+            rsp.ResultStatus = ResultStatus.Success;
+            rsp.SuccessMessage = "Kullanıcı parametreleri alındı.";
+
+            return rsp;
+        }
+
+        public async Task<ResponseDto<UserInformationsDto>> GetUserInformations()
+        {
+            var rsp = new ResponseDto<UserInformationsDto>();
+            var rspUser = await GetUserId();
+            var user = await _entity.USER.FirstOrDefaultAsync(x => x.USERID == rspUser.Data);
+            
+            rsp.ResultStatus = ResultStatus.Success;
+            rsp.Data = new UserInformationsDto()
+            {
+                Id = user.USERID,
+                Name = user.NAME,
+                Surname = user.SURNAME
+            };
+            rsp.SuccessMessage = "Kullanıcı bilgileri alındı.";
+            return rsp;
+        }
+
+        public async Task<ResponseDto<int>> Logout()
+        {
+            var rsp = new ResponseDto<int>();
+            var guidKey = _sessionService.GetSessionValue("GuidKey");
+            _sessionService.SetSessionValue("GuidKey", "");
+            await _redisCacheService.DeleteAsync(guidKey);
+            rsp.ResultStatus = ResultStatus.Success;
+            rsp.Data = 1;
+            rsp.SuccessMessage = "Oturum başarıyla kapatıldı";
+            return rsp;
+
+        }
+
     }
 }

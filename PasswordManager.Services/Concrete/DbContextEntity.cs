@@ -23,7 +23,7 @@ namespace PasswordManager.Services.Concrete
             string databaseName = "PasswordManager";
             string userName = "sa";
             string password = "123";
-            string model = databaseName + "Model";
+            string model = "PasswordManagerModel";
             string metaData = "metadata=res://*/" + model + ".csdl|res://*/" + model + ".ssdl|res://*/" + model + ".msl";
             string provider = "provider=System.Data.SqlClient";
             return $"{metaData};{provider};provider connection string=\"data source={server};database={databaseName};user id={userName};password={password};MultipleActiveResultSets=True;App=EntityFramework\"";

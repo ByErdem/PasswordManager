@@ -26,22 +26,25 @@ namespace PasswordManager.Mvc.Controllers
             return View(list);
         }
 
+        [CustomAuthorize]
         public async Task<ActionResult> Create(MyPasswordDto myPasswordDto)
         {
             var result = await _myPasswordsService.Create(myPasswordDto);
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize]
         public async Task<ActionResult> Update(MyPasswordDto myPasswordDto)
         {
             var result = await _myPasswordsService.Update(myPasswordDto);
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize]
         public async Task<ActionResult> Delete(MyPasswordDto myPasswordDto)
         {
             var result = await _myPasswordsService.Delete(myPasswordDto);
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

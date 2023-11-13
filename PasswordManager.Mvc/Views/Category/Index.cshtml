@@ -82,26 +82,6 @@
                     <div class="form-group">
                         <label>Category Name</label> <input class="form-control txtCategoryName" name="txtCategoryName" placeholder="Enter category name" type="text">
                     </div>
-
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select class="form-control select2 cmbNewCategory" name="cmbNewCategory" style="width:100%;">
-                            <option value="-1">
-                                Seçiniz
-                            </option>
-                            @if (Model.Data.Count > 0)
-                            {
-                                foreach (var item in Model.Data)
-                                {
-                                    <option value="@item.CATEGORYID">
-                                        @item.CATEGORYNAME
-                                    </option>
-                                }
-                            }
-                        </select>
-                    </div>
-
-
                 </form>
 
             </div>
@@ -126,26 +106,6 @@
                     <div class="form-group">
                         <label>Category Name</label> <input class="form-control txtEditCategoryName" name="txtEditCategoryName" placeholder="Enter category name" type="text">
                     </div>
-
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select class="form-control select2 cmbEditCategory" name="cmbEditCategory" style="width:100%;">
-                            <option value="-1">
-                                Seçiniz
-                            </option>
-                            @if (Model.Data.Count > 0)
-                            {
-                                foreach (var item in Model.Data)
-                                {
-                                    <option value="@item.CATEGORYID">
-                                        @item.CATEGORYNAME
-                                    </option>
-                                }
-                            }
-                        </select>
-                    </div>
-
-
                 </form>
 
             </div>

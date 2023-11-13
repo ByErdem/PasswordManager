@@ -11,7 +11,6 @@ $(function () {
             "CATEGORYID": Number(categoryid)
         }
 
-
         var settings = {
             link: "/Category/Delete",
             data: data,

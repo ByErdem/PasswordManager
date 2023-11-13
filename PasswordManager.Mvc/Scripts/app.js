@@ -36,10 +36,50 @@ function CallRequest(opt) {
 
     if (opt.data) {
         settings.type = "POST";
-        settings.data = JSON.stringify(data);
+        settings.data = JSON.stringify(opt.data);
     }
 
     $.ajax(settings);
+}
+
+function Login(user) {
+    var settings = {
+        link: "/Login/SignIn",
+        data: user,
+        object: null,
+        tokenNeeded: false,
+        event: function (rsp) {
+            if (rsp.ResultStatus == 0) {
+                localStorage.setItem("guid", rsp.Data.GuidKey)
+                window.location.replace("/MyPasswords");
+            }
+            else {
+                swal("Uyarı", rsp.ErrorMessage, "error");
+            }
+        }
+    }
+
+    CallRequest(settings);
+}
+
+function GetUserInformations() {
+    var settings = {
+        link: "/Login/SignIn",
+        data: user,
+        object: null,
+        tokenNeeded: false,
+        event: function (rsp) {
+            if (rsp.ResultStatus == 0) {
+                localStorage.setItem("guid", rsp.Data.GuidKey)
+                window.location.replace("/MyPasswords");
+            }
+            else {
+                swal("Uyarı", rsp.ErrorMessage, "error");
+            }
+        }
+    }
+
+    CallRequest(settings);
 }
 
 function checkTokenAndRedirect(url) {
@@ -115,6 +155,10 @@ function FillSelect2(id, event) {
         object: null,
         tokenNeeded: true,
         event: function (rsp) {
+
+            console.log(rsp);
+
+
             let _selectIsOpen = false;
             // const selectedAmount = {};
             const MATCH_AT_START_OF_WORD = false;
@@ -136,7 +180,7 @@ function FillSelect2(id, event) {
                 $selectElement.remove();
 
                 // Yeni bir <select> elementi oluştur
-                var $newSelect = $("<select></select>").addClass("form-control").addClass(id.replace(".", ""));
+                var $newSelect = $("<select></select>").addClass("form-control").addClass("select2").addClass(id.replace(".", ""));
                 $newSelect.attr("name", id.replace(".", ""));
 
                 // Yeni <select> elementini eski elementin bulunduğu yere ekle
@@ -644,7 +688,48 @@ function FillSelect2WithSubCategories(id, data, event, selectedEvent) {
 
 $(function () {
 
-    PrintCounts();
+    if ($(".userName").length > 0) {
+        console.log("doğru")
+
+        var settings = {
+            link: "/Login/GetUserInformations",
+            data: null,
+            object: null,
+            tokenNeeded: true,
+            event: function (rsp) {
+                $(".userName").text(rsp.Data.Name + " " + rsp.Data.Surname);
+            }
+        }
+
+        CallRequest(settings);
+
+    }
+
+    if ($(".Logout").length > 0) {
+
+        $(document).on("click", ".Logout", function (e) {
+            e.preventDefault();
+
+            var settings = {
+                link: "/Login/Logout",
+                data: null,
+                object: null,
+                tokenNeeded: true,
+                event: function (rsp) {
+                    if (rsp.ResultStatus == 0 && rsp.Data == 1) {
+                        window.location = "/Login";
+                    }
+                }
+            }
+
+            CallRequest(settings);
+
+        });
+
+
+
+        $(".Logout")
+    }
 
     //Proje bittiğinde burası aktifleştirilecek
     //setInterval(function () {
